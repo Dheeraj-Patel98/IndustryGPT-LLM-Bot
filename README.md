@@ -1,118 +1,259 @@
-# IndustryGPT-LLM-Bot-Using-Pre-Trained-Models-Healthcare-and-Pharmaceuticals
-# 🧠 CBSE Mental Health Chatbot
-
-A **Retrieval-Augmented Generation (RAG)** based chatbot that answers mental health–related questions **strictly using the CBSE Mental Health Manual**. This project is designed for **academic use**, student demonstrations, and educational purposes, and runs smoothly on **Google Colab (CPU)**.
-
----
+# 🧠 Retail Customer Support Chatbot using Fine-Tuned LLM (LoRA / QLoRA)
 
 ## 📌 Project Overview
 
-Mental health education is an important part of the CBSE curriculum. This project builds an AI-powered chatbot that:
+This project focuses on building a **production-ready domain-specific chatbot** by fine-tuning a Large Language Model (LLM) using a publicly available dataset.
 
-* Uses the **CBSE Mental Health Manual (PDF)** as its only knowledge source
-* Retrieves relevant content using **semantic search (FAISS)**
-* Generates accurate, student-friendly answers using a **pre-trained language model**
-* Provides an interactive **chat-based interface** using Gradio
+Instead of using Retrieval Augmented Generation (RAG), this project follows a **model-training approach**, where a pretrained Hugging Face model is **fine-tuned on customer support conversations** to directly learn the domain knowledge.
 
-The chatbot does **not hallucinate answers** and responds only based on the official CBSE document.
+The chatbot is designed to answer questions related to:
 
----
+* Orders
+* Shipping
+* Returns & Refunds
+* Product queries
+* General customer support
 
-## 🏗️ System Architecture
-
-1. **PDF Loader** – Loads the CBSE Mental Health Manual
-2. **Text Chunking** – Splits large text into manageable overlapping chunks
-3. **Embeddings** – Converts text chunks into vectors using Sentence Transformers
-4. **Vector Store (FAISS)** – Enables fast semantic similarity search
-5. **Retriever** – Fetches relevant chunks based on user queries
-6. **Language Model (FLAN-T5)** – Generates answers grounded in retrieved content
-7. **Gradio UI** – Provides a user-friendly chatbot interface
+The final model is deployed with a **Gradio chat interface**, allowing real-time interaction.
 
 ---
 
-## 🛠️ Technologies Used
+# 🎯 Objectives
 
-* **Python 3**
-* **LangChain Community** (PDF loading & FAISS integration)
-* **HuggingFace Transformers** (FLAN-T5 language model)
-* **Sentence-Transformers** (Text embeddings)
-* **FAISS** (Vector similarity search)
-* **Gradio** (Web-based chatbot interface)
-* **Google Colab** (Execution environment)
+* Build an industry-ready chatbot using LLM fine-tuning
+* Train the model using a **public LLM dataset**
+* Apply **QLoRA / LoRA** to train efficiently on limited hardware
+* Reduce hallucination and improve factual responses
+* Deploy a simple UI using **Gradio**
 
 ---
 
-## 📂 Project Structure
+# 🏭 Selected Industry
+
+**Retail Customer Support**
+
+This domain was selected because:
+
+* Retail companies widely use AI chatbots in real environments
+* The domain has structured Q&A data available
+* It allows training a focused and practical chatbot model
+
+---
+
+# 📂 Dataset
+
+The chatbot is trained using a **public instruction-response dataset** containing real customer support conversations.
+
+The dataset includes:
+
+* Customer queries (instructions)
+* Agent responses (expected output)
+
+Example training format:
 
 ```
-CBSE-Mental-Health-Chatbot/
-│
-├── CBSE_MH_Manual.pdf       # CBSE Mental Health Manual (data source)
-├── chatbot.ipynb            # Main notebook with complete code
-├── README.md                # Project documentation
-└── requirements.txt         # (Optional) Required dependencies
+### Instruction:
+Where is my order?
+
+### Response:
+You can track your order using the tracking link sent to your email.
+```
+
+This format helps the model learn conversational behaviour.
+
+---
+
+# 🤖 Model Selection
+
+A pretrained **Hugging Face causal language model** was used as the base model.
+
+### Why use a pretrained model?
+
+Training an LLM from scratch requires:
+
+* Massive datasets
+* High-end GPUs
+* Long training time
+
+Using a pretrained model provides:
+
+* Strong language understanding
+* Faster training
+* Lower compute cost
+
+The selected model supports:
+
+* 4-bit quantization
+* LoRA / QLoRA fine-tuning
+* Efficient inference in Google Colab
+
+---
+
+# ⚙️ Project Pipeline
+
+## 1️⃣ Environment Setup
+
+Libraries used:
+
+* transformers
+* datasets
+* peft
+* bitsandbytes
+* accelerate
+* trl
+* gradio
+
+---
+
+## 2️⃣ Data Preprocessing
+
+The dataset is cleaned and formatted into instruction-response prompts.
+
+Steps performed:
+
+* Remove unnecessary columns
+* Convert data into prompt template
+* Tokenize the text for training
+
+---
+
+## 3️⃣ Quantization (Memory Optimization)
+
+Large models consume significant memory.
+
+To solve this, **4-bit quantization** is applied using BitsAndBytes.
+
+Benefits:
+
+* Reduces GPU memory usage
+* Enables training on Google Colab
+* Maintains model performance
+
+---
+
+## 4️⃣ LoRA / QLoRA Fine-Tuning
+
+Instead of updating all model parameters, we use **Parameter Efficient Fine-Tuning (PEFT)**.
+
+### LoRA Benefits
+
+* Trains only small adapter layers
+* Faster training
+* Requires less memory
+* Keeps base model intact
+
+This allows us to fine-tune large models even on limited hardware.
+
+---
+
+## 5️⃣ Model Training
+
+The Hugging Face Trainer API is used.
+
+Training configuration includes:
+
+* Learning rate tuning
+* Gradient accumulation
+* Multiple training epochs
+* Batch size optimization
+
+The model learns to map **user instructions → correct responses**.
+
+---
+
+## 6️⃣ Hallucination Reduction Techniques
+
+LLMs sometimes generate incorrect information.
+To reduce hallucination, we used:
+
+* Domain-specific dataset
+* Controlled generation parameters
+* Low temperature sampling
+* Repetition penalty
+* Limited max token generation
+
+These techniques guide the model to produce **relevant and factual answers**.
+
+---
+
+## 7️⃣ Model Saving
+
+After training, the following are saved:
+
+* Fine-tuned model weights
+* Tokenizer
+* Configuration files
+
+This allows the model to be reused without retraining.
+
+---
+
+## 8️⃣ Chat Interface using Gradio
+
+A Gradio UI is built to simulate a real chatbot.
+
+Users can:
+
+* Enter questions
+* Receive real-time responses
+* Interact in conversational format
+
+---
+
+# 💬 Example Usage
+
+User:
+
+```
+Where is my order?
+```
+
+Bot:
+
+```
+You can track your order using the tracking link sent to your email.
 ```
 
 ---
 
-## 🚀 How to Run the Project (Google Colab)
+# 🧪 Running the Project
 
-1. Open **Google Colab**
-2. Upload the notebook and `CBSE_MH_Manual.pdf`
-3. Run the installation cell to install dependencies
-4. Restart the runtime (important)
-5. Run all cells sequentially
-6. Click the **Gradio public link** generated at the end
-7. Start asking questions related to mental health
+### Step 1 — Clone Repo
 
----
+```bash
+git clone <your-repo-link>
+cd <repo-name>
+```
 
-## 💬 Sample Questions
+### Step 2 — Open Notebook
 
-* What is mental health?
-* What is depression?
-* What are the signs of stress?
-* How can mental well-being be improved?
+Open the notebook in **Google Colab**
+
+### Step 3 — Run All Cells
+
+Run cells sequentially from top to bottom.
 
 ---
 
-## ✅ Key Features
+# 📊 Key Technologies
 
-* 📘 Answers strictly based on CBSE content
-* 🧠 Retrieval-Augmented Generation (RAG)
-* 👩‍🎓 Student-friendly explanations
-* ⚡ Runs on CPU (no GPU required)
-* 🌐 Interactive web interface
-* 🧩 Well-structured and explainable code
-
----
-
-## ⚠️ Disclaimer
-
-This chatbot is **for educational purposes only**. It is not a substitute for professional medical or psychological advice. For serious mental health concerns, users should consult a qualified mental health professional.
+| Tool                     | Purpose                  |
+| ------------------------ | ------------------------ |
+| HuggingFace Transformers | Model & Tokenizer        |
+| PEFT                     | LoRA / QLoRA Fine-tuning |
+| BitsAndBytes             | 4-bit Quantization       |
+| PyTorch                  | Deep Learning Framework  |
+| Gradio                   | Chatbot UI               |
 
 ---
 
-## 🎓 Academic Relevance
+# 🚀 Future Improvements
 
-This project demonstrates:
-
-* Practical application of Large Language Models (LLMs)
-* Use of semantic search and vector databases
-* Prompt engineering for controlled responses
-* Responsible AI usage in sensitive domains
-
-It is suitable for **final-year projects**, **AI/ML coursework**, and **demonstrations**.
+* Add multi-turn conversation memory
+* Expand dataset for better generalization
+* Deploy model as API
+* Integrate with real e-commerce backend
 
 ---
 
-## 🙌 Acknowledgements
-
-* **CBSE** for the Mental Health Manual
-* **Hugging Face** for pre-trained models
-* **LangChain** and **FAISS** for RAG components
-* **Gradio** for the chatbot interface
-
----
-
-⭐ *If you find this project useful, consider giving the repository a star!*
+⭐ If you like this project, consider giving it a star!
